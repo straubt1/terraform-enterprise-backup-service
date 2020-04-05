@@ -1,0 +1,19 @@
+# Purpose: Create a Backup, Upload to S3, and Cleanup
+# Location: /etc/systemd/system/tfe-backup.service
+[Unit]
+Description="HashiCorp Terraform Enterprise - Backup Service"
+Documentation=https://www.terraform.io/docs/enterprise/admin/backup-restore.html
+Requires=tfe-backup.service
+After=replicated.service,replicated-operator.service,replicated-ui.service
+Wants=tfe-backup.timer
+
+[Service]
+EnvironmentFile=/etc/tfe/tfe-backup.config
+ExecStartPre=-/bin/mkdir -p /etc/tfe
+ExecStart=/etc/tfe/tfe-backup.sh \
+  ${TFE_BACKUP_S3_BUCKET_NAME} \
+  ${TFE_BACKUP_PASSWORD} \
+  ${TFE_BACKUPS_TO_RETAIN}
+
+[Install]
+WantedBy=multi-user.target

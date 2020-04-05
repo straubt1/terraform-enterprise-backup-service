@@ -1,0 +1,18 @@
+# Purpose: Check for a Backup and Restore if available
+# Location: /etc/systemd/system/tfe-restore.service
+[Unit]
+Description="HashiCorp Terraform Enterprise - Restore Service"
+Documentation=https://www.terraform.io/docs/enterprise/admin/backup-restore.html
+Requires=tfe-restore.service
+After=replicated.service,replicated-operator.service,replicated-ui.service
+Wants=tfe-restore.timer
+
+[Service]
+EnvironmentFile=/etc/tfe/tfe-restore.config
+ExecStartPre=-/bin/mkdir -p /etc/tfe
+ExecStart=/etc/tfe/tfe-restore.sh  \
+  ${TFE_RESTORE_S3_BUCKET_NAME} \
+  ${TFE_RESTORE_PASSWORD}
+
+[Install]
+WantedBy=multi-user.target

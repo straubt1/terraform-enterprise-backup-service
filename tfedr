@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -e
+
+export TFEDR_CLI_WORKDIR=$(cd $(dirname $0) && pwd)
+
+cli_help() {
+  cli_name=${0##*/}
+  echo "
+$cli_name
+Terraform Enterprise Backup and Restore CLI
+Version: $(cat $TFEDR_CLI_WORKDIR/VERSION)
+https://github.com/straubt1/terraform-enterprise-backup-service
+Usage: $cli_name [task]
+Tasks:
+  install-backup      Install Backup
+  uninstall-backup    Uninstall Backup
+  enable-backup       Enable Backup
+  install-restore     Install Restore
+  uninstall-restore   Uninstall Restore
+  enable-restore      Enable Restore
+  *                   Help
+"
+  exit 1
+}
+
+# cli_log "Exporting config ..."
+[ ! -f "$TFEDR_CLI_WORKDIR/config" ] \
+  && echo "ERROR: No $TFEDR_CLI_WORKDIR/config file found. " \
+  && echo "cp $TFEDR_CLI_WORKDIR/config.template $TFEDR_CLI_WORKDIR/config and adjust." \
+  && exit 1
+
+export $(cat "$TFEDR_CLI_WORKDIR/config" | xargs)
+
+case "$1" in
+  install-backup|ib)
+    "$TFEDR_CLI_WORKDIR/tasks/install-backup" "${@:2}" | tee -ia "$TFEDR_CLI_WORKDIR/logs/install-backup_${2}.log"
+    ;;
+  uninstall-backup|ib)
+    "$TFEDR_CLI_WORKDIR/tasks/uninstall-backup" "${@:2}" | tee -ia "$TFEDR_CLI_WORKDIR/logs/uninstall-backup_${2}.log"
+    ;;
+  enable-backup|ib)
+    "$TFEDR_CLI_WORKDIR/tasks/enable-backup" "${@:2}" | tee -ia "$TFEDR_CLI_WORKDIR/logs/enable-backup_${2}.log"
+    ;;
+  install-restore|ib)
+    "$TFEDR_CLI_WORKDIR/tasks/install-restore" "${@:2}" | tee -ia "$TFEDR_CLI_WORKDIR/logs/install-restore_${2}.log"
+    ;;
+  uninstall-restore|ib)
+    "$TFEDR_CLI_WORKDIR/tasks/uninstall-restore" "${@:2}" | tee -ia "$TFEDR_CLI_WORKDIR/logs/uninstall-restore_${2}.log"
+    ;;
+  enable-restore|ib)
+    "$TFEDR_CLI_WORKDIR/tasks/enable-restore" "${@:2}" | tee -ia "$TFEDR_CLI_WORKDIR/logs/enable-restore_${2}.log"
+    ;;
+  *)
+    cli_help
+    ;;
+esac

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -e
+
+# . "$BAGCLI_WORKDIR/common"
+
+cli_help_uninstall_backup() {
+  echo "
+Command: uninstall-backup
+Usage: 
+  uninstall-backup"
+  exit 1
+}
+
+echo "Stopping Services"
+systemctl stop tfe-backup.timer
+systemctl stop tfe-backup.service
+systemctl disable tfe-backup.timer
+systemctl disable tfe-backup.service
+
+echo "Remove Files"
+rm -f /etc/systemd/system/tfe-backup.timer
+rm -f /etc/systemd/system/tfe-backup.service
+rm -f ${TFE_BACKUP_SCRIPT_FOLDER}/tfe-backup.sh
+rm -f ${TFE_BACKUP_SCRIPT_FOLDER}/tfe-backup.config
+
+echo "Reload daemon"
+systemctl daemon-reload
+
+echo "Un-Installation of Backup Complete"

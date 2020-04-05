@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -e
+
+# . "$BAGCLI_WORKDIR/common"
+
+cli_help_install_restore() {
+  echo "
+Command: install-restore
+Usage: 
+  install-restore s3_bucket_name restore_password"
+  exit 1
+}
+
+# TODO: make this flags not position based
+# [ ! -n "$1" ] && cli_help_install
+if [ -z "$1" ] ; then
+  echo "Install-Restore Argument Missing - s3_bucket_name"
+  cli_help_install_restore
+fi
+if [ -z "$2" ] ; then
+  echo "Install-Restore Argument Missing - restore_password"
+  cli_help_install_restore
+fi
+
+restore_s3_bucket_name=$1
+restore_password=$2
+
+echo "Copy Files"
+mkdir -p ${TFE_RESTORE_SCRIPT_FOLDER}
+cp ./restore/tfe-restore.timer /etc/systemd/system/tfe-restore.timer
+cp ./restore/tfe-restore.service /etc/systemd/system/tfe-restore.service
+cp ./restore/tfe-restore.sh ${TFE_RESTORE_SCRIPT_FOLDER}/tfe-restore.sh
+
+echo "Create Configuration File"
+cat > ${TFE_RESTORE_SCRIPT_FOLDER}/tfe-restore.config <<EOF
+TFE_RESTORE_S3_BUCKET_NAME="${restore_s3_bucket_name}"
+TFE_RESTORE_PASSWORD="${restore_password}"
+EOF
+
+echo "Systemd files are in place, you must enable the timer and service."
+
+echo "Installation of Restore Complete"

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -e
+
+# . "$BAGCLI_WORKDIR/common"
+
+cli_help_uninstall_restore() {
+  echo "
+Command: uninstall-restore
+Usage: 
+  uninstall-restore"
+  exit 1
+}
+
+echo "Stopping Services"
+systemctl stop tfe-restore.timer
+systemctl stop tfe-restore.service
+systemctl disable tfe-restore.timer
+systemctl disable tfe-restore.service
+
+echo "Remove Files"
+rm -f /etc/systemd/system/tfe-restore.timer
+rm -f /etc/systemd/system/tfe-restore.service
+rm -f ${TFE_RESTORE_SCRIPT_FOLDER}/tfe-restore.sh
+rm -f ${TFE_RESTORE_SCRIPT_FOLDER}/tfe-restore.config
+
+echo "Reload daemon"
+systemctl daemon-reload
+
+echo "Un-Installation of Restore Complete"

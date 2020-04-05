@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -e
+
+# . "$BAGCLI_WORKDIR/common"
+
+cli_help_install_backup() {
+  echo "
+Command: install-backup
+Usage: 
+  install-backup s3_bucket_name backup_password"
+  exit 1
+}
+
+# TODO: make this flags not position based
+# [ ! -n "$1" ] && cli_help_install
+if [ -z "$1" ] ; then
+  echo "Install-Backup Argument Missing - s3_bucket_name"
+  cli_help_install_backup
+fi
+if [ -z "$2" ] ; then
+  echo "Install-Backup Argument Missing - backup_password"
+  cli_help_install_backup
+fi
+
+backup_s3_bucket_name=$1
+backup_password=$2
+
+echo "Copy Files"
+mkdir -p ${TFE_BACKUP_SCRIPT_FOLDER}
+cp ./backup/tfe-backup.timer /etc/systemd/system/tfe-backup.timer
+cp ./backup/tfe-backup.service /etc/systemd/system/tfe-backup.service
+cp ./backup/tfe-backup.sh ${TFE_BACKUP_SCRIPT_FOLDER}/tfe-backup.sh
+
+echo "Create Configuration File"
+cat > ${TFE_BACKUP_SCRIPT_FOLDER}/tfe-backup.config <<EOF
+TFE_BACKUP_S3_BUCKET_NAME="${backup_s3_bucket_name}"
+TFE_BACKUP_PASSWORD="${backup_password}"
+TFE_BACKUPS_TO_RETAIN=${TFE_DEFAULT_BACKUPS_TO_RETAIN}
+EOF
+
+echo "Systemd files are in place, you must enable the timer and service."
+
+echo "Installation of Backup Complete"

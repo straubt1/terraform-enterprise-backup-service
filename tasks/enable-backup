@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e
+
+# . "$BAGCLI_WORKDIR/common"
+
+cli_help_enable_backup() {
+  echo "
+Command: enable-backup
+Usage: 
+  enable-backup s3_bucket_name backup_password"
+  exit 1
+}
+
+echo "Enabling Service and Timer"
+systemctl enable tfe-backup.timer
+systemctl enable tfe-backup.service
+systemctl start tfe-backup.timer
+
+echo "Reload daemon"
+systemctl daemon-reload
+systemctl is-enabled tfe-backup.service
+systemctl is-enabled tfe-backup.timer
+
+echo "Service and Timer are enabled. You can force the service to run with the command'systemctl start tfe-backup'"
+echo "Enablement of Backup Complete"

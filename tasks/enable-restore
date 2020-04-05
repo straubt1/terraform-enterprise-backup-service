@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e
+
+# . "$BAGCLI_WORKDIR/common"
+
+cli_help_enable_restore() {
+  echo "
+Command: enable-restore
+Usage: 
+  enable-restore s3_bucket_name restore_password"
+  exit 1
+}
+
+echo "Enabling Service and Timer"
+systemctl enable tfe-restore.timer
+systemctl enable tfe-restore.service
+systemctl start tfe-restore.timer
+
+echo "Reload daemon"
+systemctl daemon-reload
+systemctl is-enabled tfe-restore.service
+systemctl is-enabled tfe-restore.timer
+
+echo "Service and Timer are enabled. You can force the service to run with the command'systemctl start tfe-restore'"
+echo "Enablement of Restore Complete"

@@ -1,0 +1,16 @@
+# Purpose: To trigger the Restore Service on a cadence
+# Location: /etc/systemd/system/tfe-restore.timer
+[Unit]
+Description="HashiCorp Terraform Enterprise - Restore Service Timer"
+Documentation=https://www.terraform.io/docs/enterprise/admin/backup-restore.html
+Requires=tfe-restore.service
+After=network-online.target
+
+[Timer]
+Unit=tfe-restore.service
+OnUnitInactiveSec=10m
+RandomizedDelaySec=2m
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
