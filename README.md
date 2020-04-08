@@ -12,12 +12,12 @@ unzip tfe-backup.zip && \
 cd terraform-enterprise-backup-service-master
 
 # Backup
-./tfdr install-backup "<S3 Bucket Name>" "<Backup Password>"
-./tfdr enable-backup
+./tfedr install-backup "<S3 Bucket Name>" "<Backup Password>"
+./tfedr enable-backup
 
 # Restore
-./tfdr install-restore "<S3 Bucket Name>" "<Backup Password>"
-./tfdr enable-restore
+./tfedr install-restore "<S3 Bucket Name>" "<Backup Password>"
+./tfedr enable-restore
 ```
 ## Backup Service
 
